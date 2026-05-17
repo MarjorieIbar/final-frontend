@@ -2,6 +2,8 @@ import { useState, useContext } from "react";
 import { UserContext } from "../context/UserProvider";
 import { useNavigate } from "react-router-dom";
 
+const BACKEND_URL = "https://backend-0vx7.onrender.com";
+
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -9,25 +11,36 @@ const Login = () => {
   const { login } = useContext(UserContext); 
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     
-    
-    
-    const usuarioLogueado = { 
-      email: email, 
-      avatar: "https://via.placeholder.com/150" 
-    };
-    
-    login(usuarioLogueado); 
-    
-    alert("¡Bienvenido de nuevo!");
-    navigate("/"); 
+    try {
+      const response = await fetch(`${BACKEND_URL}/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
+
+      if (!response.ok) throw new Error("Credenciales incorrectas");
+
+      const data = await response.json();
+      
+      const usuarioLogueado = { 
+        email: email, 
+        avatar: "https://via.placeholder.com/150" 
+      };
+      
+      login(usuarioLogueado); 
+      alert("¡Bienvenido de nuevo!");
+      navigate("/"); 
+
+    } catch (error) {
+      alert(error.message);
+    }
   };
 
   return (
     <div className="d-flex justify-content-center align-items-center vh-100 bg-light">
-      
       <div className="p-5 rounded shadow" style={{ backgroundColor: "#ffc107", width: "400px" }}>
         <h2 className="mb-3 fw-bold">Market Place</h2>
         <p>Iniciar sesión</p>

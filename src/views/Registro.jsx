@@ -2,6 +2,8 @@ import { useState, useContext } from "react";
 import { UserContext } from "../context/UserProvider";
 import { useNavigate } from "react-router-dom";
 
+const BACKEND_URL = "https://backend-0vx7.onrender.com";
+
 const Registro = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -10,19 +12,27 @@ const Registro = () => {
   const { login } = useContext(UserContext); 
   const navigate = useNavigate();
 
-  const handleRegistro = (e) => {
+  const handleRegistro = async (e) => {
     e.preventDefault();
     
-    
-    const datosUsuario = { email, avatar };
-    
-    
-    login(datosUsuario); 
-    
-    console.log("Usuario guardado en el contexto:", datosUsuario);
-    alert("¡Registro exitoso! Ya puedes ver tu perfil.");
-    
-    navigate("/"); 
+    try {
+      const response = await fetch(`${BACKEND_URL}/registro`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
+
+      if (!response.ok) throw new Error("Error al registrar usuario");
+
+      const datosUsuario = { email, avatar };
+      login(datosUsuario); 
+      
+      alert("¡Registro exitoso! Ya puedes ver tu perfil.");
+      navigate("/"); 
+
+    } catch (error) {
+      alert(error.message);
+    }
   };
 
   return (
