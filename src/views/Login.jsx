@@ -23,7 +23,6 @@ const Login = () => {
 
       if (!response.ok) throw new Error("Credenciales incorrectas");
 
-      const data = await response.json();
       
       const usuarioLogueado = { 
         email: email, 
